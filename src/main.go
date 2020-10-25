@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 	"math/rand"
+	"sort"
 )
 
 type myfunType = func(int)int //自定义数据类型
@@ -58,6 +59,12 @@ func AddUpper() func(int) int{
 		fmt.Println("str= ",str)
 		return n
 	}
+}
+
+func changeArr(arr *[3]int){
+	(*arr)[0] = 10;
+	(*arr)[1] = 20;
+	(*arr)[2] = 30;
 }
 
 func main() {
@@ -217,5 +224,149 @@ func main() {
 	fmt.Println(f(2))
 	fmt.Println(f(3))
 
+	//数组  数组是值类型，他直接指向的是数据空间而不是地址
+	var arr [3]int;
+	fmt.Println(arr)
+	fmt.Println(&arr)
+	fmt.Println("arr[0]的地址为 ",&arr[0])
+	fmt.Println("arr[1]的地址为 ",&arr[1])
+
+
+	//数组遍历
+	var arr1  = [...]int{1,2,3}
+	fmt.Println(arr1)
+	for _,v := range arr1{
+		fmt.Printf("v=%v",v)
+		fmt.Println()
+	}
+
+	fmt.Printf("%p\n",&arr1)
+	fmt.Printf("%T\n",arr1)
+
+	changeArr(&arr1)
+	fmt.Println(arr1)
+
+	//切片
+	slice:=arr1[0:2]
+	fmt.Println(slice)
+	fmt.Printf("%p\n",&slice)//&slice是存储&arr1的地址
+	fmt.Println(&arr1[0])
+	fmt.Println(&slice[0])
+
+	slice = arr1[:]
+	fmt.Println(slice)
+	slice = arr1[:3]
+	fmt.Println(slice)
+	slice = arr1[0:]
+	fmt.Println(slice)
+
+	var slice1 = make([]int,5,10)
+	slice1[1] = 10
+	slice1[2]  =20
+	fmt.Println(slice1)
+
+	var slice2 []int = []int{1,2,3}
+	fmt.Printf("%T\n",slice2)
+	fmt.Println(slice2)
+
+	//切片追加
+	slice3 := []int{2,4,5}
+	slice2 = append(slice2,slice3...)
+	fmt.Println(slice2)
+
+	slice3 = append(slice3,100,200)
+	fmt.Println(slice3)
+
+	var slice4 = make([]int,10,10);
+	slice5:=[]int{1,2,3,4,5}
+	copy(slice4,slice5)
+	fmt.Println(slice4)
+
+	//string和切片
+	strSlice := "Hello"
+	//slice6:=strSlice[:]
+	// slice6[0] = 'h'//这样是不可以的，因为此时的切片指向的是strSlice处的切片，因此不能够进行一个赋值操作，此处的赋值操作就相当于是对字符串进行赋值操作
+
+	//如果需要对字符串进行修改的话
+	//byte只能处理英文字母，不能处理带汉字的字符串
+	slice7 := []byte(strSlice)
+	slice7[0] = 'h'
+	strSlice = string(slice7)
+	fmt.Println(strSlice)
+	//带有中文字符，需要按照字符处理
+	slice8 := []rune(strSlice)
+	slice8[0] = '薛'
+	strSlice = string(slice8)
+	fmt.Println(strSlice)
+
+
+	//map
+	var mapTest map[int]string
+	mapTest = make(map[int]string,10)//必须要make才能为map分配空间，否则不会自动分配空间
+	mapTest[0] = "Cooper"
+	mapTest[1] = "Test"
+	mapTest[2] = "Marry"
+
+	fmt.Println(mapTest)
+
+	mapTest2:=map[int]string{0:"shanghai",1:"hangzhou",2:"shenzhen"}
+	fmt.Println(mapTest2)
+
+	//删除map中的某个值
+	delete(mapTest2,0)
+	//因为go中没有clean清除所有map里面值的操作，因此直接将需要清空的变量make一下重新分配空间即可,原来的直接由gc回收即可
+	mapTest = make(map[int]string)
+	mapTest[0] = "Hello"
+	fmt.Println(mapTest)
+
+	//查找
+	val,ok := mapTest2[1]
+	if ok{
+		fmt.Println("找到了该值 ",val)
+	}else{
+		fmt.Println("未找到该值")
+	}
+
+	//map切片  需要注意一下，需要make两次，因为切片需要make一次，然后map也需要make一次
+	var newMap []map[int]string
+	newMap = make([]map[int]string,2)
+
+	if newMap[0]==nil{
+		newMap[0] = make(map[int]string,2)
+		newMap[0][0] = "Hi"
+		newMap[0][1] = "Cooper"
+	}
+	if newMap[1]==nil{
+		newMap[1] = make(map[int]string,2)
+		newMap[1][0] = "Hello"
+		newMap[1][1] = "Mary"
+	}
 	
+	//添加元素
+	var newMapadd map[int]string
+	newMapadd = make(map[int]string,2)
+	newMapadd[0] = "How"
+	newMapadd[1] = "are"
+	newMap = append(newMap,newMapadd)
+	fmt.Println(newMap)
+
+	//map排序
+	mapSort := map[int]string {
+		10:"Beijing",
+		1:"New York",
+		6:"Canada",
+		3:"Shanghai",
+	}
+
+	var keys []int
+	for k := range mapSort{
+		keys = append(keys,k)
+	}
+
+	sort.Ints(keys)
+
+	for _,i := range keys{
+		fmt.Println(mapSort[i])
+	}
+
 }

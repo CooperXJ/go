@@ -44,7 +44,7 @@ func testDefer(n1 int,n2 int){
 	}
  }
 
- func testDIYError2(){clear
+ func testDIYError2(){
 	err:=testDIYError("config.ini1")
 	if err!=nil {
 		panic(err)
